@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.xunye</groupId>
+    <artifactId>travel</artifactId>
+    <version>1.0</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>travel-core</module>
+        <module>travel-service</module>
+        <module>travel-service-api</module>
+        <module>travel-application</module>
+        <module>travel-auth</module>
+        <module>travel-common</module>
+        <module>travel-dispatch</module>
+        <module>travel-pay</module>
+    </modules>
+
+
+    <properties>
+        <springboot.version>2.4.3</springboot.version>
+        <druid.version>1.2.16</druid.version>
+        <java.version>11</java.version>
+        <mapstruct.version>1.5.3.Final</mapstruct.version>
+        <easyexcel.version>3.2.1</easyexcel.version> <!-- 2.2.6 -->
+        <hutool.version>5.8.16</hutool.version>
+        <fastjson2.version>2.0.27</fastjson2.version>
+        <gson.version>2.10.1</gson.version>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <!-- 编码 -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <lombok.version>1.18.10</lombok.version>
+        <guava.version>23.0</guava.version>
+        <p6spy.version>3.8.6</p6spy.version>
+    </properties>
+
+    <!-- 依赖声明 -->
+    <dependencyManagement>
+        <dependencies>
+            <!-- SpringBoot -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${springboot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- Druid数据库连接池 -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-starter</artifactId>
+                <version>${druid.version}</version>
+            </dependency>
+
+            <!-- Gson -->
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
+            </dependency>
+
+            <!-- mapstruct -->
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+
+            <!-- hutool工具包 -->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+
+            <!-- guava工具 -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
+            <!-- 阿里Fastjson2 -->
+            <dependency>
+                <groupId>com.alibaba.fastjson2</groupId>
+                <artifactId>fastjson2</artifactId>
+                <version>${fastjson2.version}</version>
+            </dependency>
+
+            <!-- p6spy sql语句监控 -->
+            <dependency>
+                <groupId>p6spy</groupId>
+                <artifactId>p6spy</artifactId>
+                <version>${p6spy.version}</version>
+            </dependency>
+
+            <!-- common io -->
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.6</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.xunye</groupId>
+                <artifactId>travel-core</artifactId>
+                <version>1.0</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- 公共依赖 -->
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.project-lombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <!-- QueryDsl代码生成插件 -->
+            <plugin>
+                <groupId>com.mysema.maven</groupId>
+                <artifactId>apt-maven-plugin</artifactId>
+                <version>1.1.3</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>target/generated-sources/java</outputDirectory>
+                            <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <!--QueryDSL支持-->
+                    <dependency>
+                        <groupId>com.querydsl</groupId>
+                        <artifactId>querydsl-apt</artifactId>
+                        <version>4.4.0</version>
+                        <scope>compile</scope>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <!--
+                mapstruct 编译插件
+                lombok必须在mapstruct之前，否则生成的Java类有问题
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${mapstruct.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

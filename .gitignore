@@ -1,0 +1,35 @@
+# Created by .ignore support plugin (hsz.mobi)
+### Java template
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# Package Files #
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Maven #
+target/
+
+# IDEA #
+.idea/
+*.iml
+*.yaml
+
+# Eclipse #
+.settings/
+.classpath
+.project
+
+
+# 其他
+.DS_Store
+#/nxResources/
+/nxTarget/

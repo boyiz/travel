@@ -6,11 +6,10 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum PayTypeEnum implements BaseEnum {
+public enum PaymentTypeEnum implements BaseEnum {
 
-    UNPAID("未支付", 0),
+    WECHAT("微信支付", 0),
     ALIPAY("支付宝", 1),
-    WECHAT("微信支付", 2),
     ;
 
     private final String label;

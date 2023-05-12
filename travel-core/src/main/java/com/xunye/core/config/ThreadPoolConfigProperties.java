@@ -13,5 +13,6 @@ public class ThreadPoolConfigProperties {
 
     private Integer keepAliveTime;
 
+    private Integer queueCapacity;
 
 }

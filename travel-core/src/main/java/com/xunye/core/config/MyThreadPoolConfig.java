@@ -15,8 +15,7 @@ import org.springframework.context.annotation.Configuration;
 
 @EnableConfigurationProperties(ThreadPoolConfigProperties.class)
 @Configuration
-public class MyThreadConfig {
-
+public class MyThreadPoolConfig {
 
     @Bean
     public ThreadPoolExecutor threadPoolExecutor(ThreadPoolConfigProperties pool) {

@@ -3,6 +3,7 @@ package com.xunye.order.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.querydsl.core.types.ExpressionUtils;
 import com.xunye.common.constant.GroupConstant;
+import com.xunye.common.em.RedisDelayQueueEnum;
 import com.xunye.core.em.StatusEnum;
 import com.xunye.core.result.R;
 import com.xunye.core.base.BaseMapper;
@@ -10,6 +11,7 @@ import com.xunye.core.base.BaseRepository;
 import com.xunye.core.base.BaseServiceImpl;
 import com.xunye.core.model.PredicateWrapper;
 import com.xunye.core.tools.ComputeTools;
+import com.xunye.core.tools.RedisDelayQueueUtil;
 import com.xunye.core.tools.RedisUtil;
 import com.xunye.group.dto.GroupInfoEditDTO;
 import com.xunye.group.entity.QGroupInfo;
@@ -55,9 +57,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -87,6 +92,8 @@ public class OrderInfoServiceImpl extends BaseServiceImpl<OrderInfoEditDTO, Orde
     private RedisUtil redisUtil;
     @Autowired
     private ThreadPoolExecutor executor;
+    @Autowired
+    private RedisDelayQueueUtil redisDelayQueueUtil;
 
     private final OrderInfoMapper orderInfoMapper;
     private final OrderInfoRepository orderInfoRepository;
@@ -125,7 +132,7 @@ public class OrderInfoServiceImpl extends BaseServiceImpl<OrderInfoEditDTO, Orde
         confirmOrderThreadLocal.set(orderSubmitCmd);
         QGroupInfo qGroupInfo = QGroupInfo.groupInfo;
         QPolicyInfo qPolicyInfo = QPolicyInfo.policyInfo;
-        QCoupons qCoupons = QCoupons.coupons;
+        //QCoupons qCoupons = QCoupons.coupons;
         QCouponsHistory qCouponsHistory = QCouponsHistory.couponsHistory;
 
         //解析OrderSubmitCmd实体
@@ -335,7 +342,12 @@ public class OrderInfoServiceImpl extends BaseServiceImpl<OrderInfoEditDTO, Orde
 
         /* ----------------------------------消息队列---------------------------------------*/
 
-        // TODO 发送订单ID到mq消息队列
+        //  发送订单ID到redis 延时队列
+        Map<String, String> orderMap = new HashMap<>();
+        orderMap.put("orderId", orderInfoEntity.getId());
+        orderMap.put("orderSn", timeToSnId);
+        orderMap.put("paymentType", orderInfoEntity.getPayType().toString());
+        redisDelayQueueUtil.addDelayQueue(orderMap, 10, TimeUnit.SECONDS, RedisDelayQueueEnum.ORDER_PAYMENT_TIMEOUT.getCode());
 
         // 返回订单ID
         return orderInfoEntity.getId();

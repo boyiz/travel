@@ -9,7 +9,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.xunye.auth.dto.UserDTO;
 import com.xunye.auth.dto.UserEditDTO;
 import com.xunye.auth.entity.User;
-import com.xunye.auth.service.IUserService;
+import com.xunye.auth.service.ISysUserService;
 import com.xunye.auth.service.WxAuthService;
 import com.xunye.auth.service.impl.WxMiniApiImpl;
 import com.xunye.core.result.R;
@@ -43,9 +43,9 @@ public class WxAuthController {
     private String secret;
 
     private final WxAuthService wxAuthService;
-    private final IUserService userService;
+    private final ISysUserService userService;
 
-    public WxAuthController(WxAuthService wxAuthService, IUserService userService) {
+    public WxAuthController(WxAuthService wxAuthService, ISysUserService userService) {
         this.wxAuthService = wxAuthService;
         this.userService = userService;
     }

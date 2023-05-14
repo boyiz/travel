@@ -15,7 +15,7 @@ import com.xunye.auth.entity.Dept;
 import com.xunye.auth.entity.QDept;
 import com.xunye.auth.entity.User;
 import com.xunye.auth.service.IDeptService;
-import com.xunye.auth.service.IUserService;
+import com.xunye.auth.service.ISysUserService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Predicate;
@@ -34,7 +34,7 @@ public class DeptBizImpl implements IDeptBiz {
     @Autowired
     private IDeptService deptService;
     @Autowired
-    private IUserService userService;
+    private ISysUserService userService;
 
 
     // 部门 => mixTreeNode

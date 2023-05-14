@@ -8,7 +8,7 @@ import org.springframework.data.querydsl.binding.QuerydslBindings;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserRepository extends BaseRepository<User, String>,
+public interface SysUserRepository extends BaseRepository<User, String>,
         QuerydslBinderCustomizer<QUser> {
 
     @Override

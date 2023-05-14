@@ -1,6 +1,8 @@
 package com.xunye.auth.dto;
 
+import cn.hutool.core.lang.Assert;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.xunye.core.tools.CheckTools;
 import lombok.Data;
 import com.xunye.core.base.BaseDTO;
 import java.util.Date;
@@ -21,6 +23,9 @@ public class UserDTO extends BaseDTO {
 
     @ExcelProperty(value = "id")
     private String id;
+
+    @ExcelProperty(value = "用户名")
+    private String userName;
 
     @ExcelProperty(value = "用户微信openid")
     @JsonIgnore
@@ -50,6 +55,7 @@ public class UserDTO extends BaseDTO {
     @ExcelProperty(value = "用户昵称")
     private String nickName;
 
+    @JsonIgnore
     @ExcelProperty(value = "用户密码")
     private String password;
 

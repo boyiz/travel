@@ -26,13 +26,13 @@ import org.hibernate.annotations.Where;
 @Data
 @Entity
 @DynamicUpdate
-@Table(name = User.TABLE_NAME)
-@SQLDelete(sql = "update " + User.TABLE_NAME + " set is_delete = '1' where id = ?")
+@Table(name = Customer.TABLE_NAME)
+@SQLDelete(sql = "update " + Customer.TABLE_NAME + " set is_delete = '1' where id = ?")
 @Where(clause = "is_delete = 0")
 @NoArgsConstructor
-public class User extends BaseEntity {
+public class Customer extends BaseEntity {
 
-    public static final String TABLE_NAME = "user_info";
+    public static final String TABLE_NAME = "upms_user_info";
 
     @Column(name="user_name", columnDefinition = "varchar(32) comment '用户名'")
     private String userName;
@@ -92,14 +92,14 @@ public class User extends BaseEntity {
     private Integer isDelete = 0;
 
     @Column(name = "dept_id", columnDefinition = "varchar(32) comment '部门ID'")
-    private String deptId;
+    private String deptId = "1";
     /**
      * 部门名
      */
     @Column(name = "dept_name", columnDefinition = "varchar(32) comment '部门名'")
     private String deptName;
 
-    public User(Date date) {
+    public Customer(Date date) {
         setUpdateTime(date);
     }
 

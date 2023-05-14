@@ -32,7 +32,7 @@ import org.hibernate.annotations.Where;
 @NoArgsConstructor
 public class User extends BaseEntity {
 
-    public static final String TABLE_NAME = "user_info";
+    public static final String TABLE_NAME = "sys_user_info";
 
     @Column(name="user_name", columnDefinition = "varchar(32) comment '用户名'")
     private String userName;

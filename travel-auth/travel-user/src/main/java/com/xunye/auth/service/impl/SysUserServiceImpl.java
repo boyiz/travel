@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.xunye.auth.repo.UserRepository;
+import com.xunye.auth.repo.SysUserRepository;
 import com.google.common.collect.Lists;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Predicate;
@@ -12,8 +12,8 @@ import com.xunye.auth.dto.UserDTO;
 import com.xunye.auth.dto.UserEditDTO;
 import com.xunye.auth.entity.QUser;
 import com.xunye.auth.entity.User;
-import com.xunye.auth.mapper.UserMapper;
-import com.xunye.auth.service.IUserService;
+import com.xunye.auth.mapper.SysUserMapper;
+import com.xunye.auth.service.ISysUserService;
 import com.xunye.core.base.BaseMapper;
 import com.xunye.core.base.BaseRepository;
 import com.xunye.core.base.BaseServiceImpl;
@@ -24,22 +24,23 @@ import com.xunye.core.tools.CheckTools;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
-public class UserServiceImpl extends BaseServiceImpl<UserEditDTO, UserDTO, User, String> implements
-    IUserService {
+public class SysUserServiceImpl extends BaseServiceImpl<UserEditDTO, UserDTO, User, String> implements
+    ISysUserService {
 
     private static final QUser qUserInfo = QUser.user;
 
-    private final UserMapper userMapper;
-    private final UserRepository userRepository;
+    private final SysUserMapper sysUserMapper;
+    private final SysUserRepository sysUserRepository;
 
-    public UserServiceImpl(UserMapper userMapper, UserRepository userRepository) {
-        this.userMapper = userMapper;
-        this.userRepository = userRepository;
+    public SysUserServiceImpl(SysUserMapper sysUserMapper, SysUserRepository sysUserRepository) {
+        this.sysUserMapper = sysUserMapper;
+        this.sysUserRepository = sysUserRepository;
     }
 
     /**
@@ -49,8 +50,11 @@ public class UserServiceImpl extends BaseServiceImpl<UserEditDTO, UserDTO, User,
     @Transactional(rollbackFor = Exception.class)
     public String createUserInfo(UserEditDTO userEditDto, User operatorUser) {
         // 转换为Entity实体
-        User userEntity = userMapper.toEntity(userEditDto);
-
+        User userEntity = sysUserMapper.toEntity(userEditDto);
+        //设置密码,加密存储
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String encode = passwordEncoder.encode(userEditDto.getPassword());
+        userEntity.setPassword(encode);
         // 设置创建信息
         if (CheckTools.isNotNullOrEmpty(operatorUser)) {
             userEntity.setCreateBy(operatorUser.getId());
@@ -61,7 +65,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserEditDTO, UserDTO, User,
         }
 
         // 创建用户实体
-        userRepository.saveAndFlush(userEntity);
+        sysUserRepository.saveAndFlush(userEntity);
         return userEntity.getId();
     }
 
@@ -71,18 +75,18 @@ public class UserServiceImpl extends BaseServiceImpl<UserEditDTO, UserDTO, User,
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateUserInfo(UserEditDTO userEditDto, User operatorUser) {
-        Optional<User> optional = userRepository.findById(userEditDto.getId());
+        Optional<User> optional = sysUserRepository.findById(userEditDto.getId());
         if (!optional.isPresent()) {
             throw new BusinessException("用户实体不存在");
         }
 
         // 将EditDto属性合并到DB实体中
         User userDB = optional.get();
-        userMapper.merge(userEditDto, userDB);
+        sysUserMapper.merge(userEditDto, userDB);
         // 设置更新信息
         userDB.setUpdateBy(operatorUser.getId());
         // 更新用户实体
-        userRepository.saveAndFlush(userDB);
+        sysUserRepository.saveAndFlush(userDB);
     }
 
     /**
@@ -147,7 +151,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserEditDTO, UserDTO, User,
      */
     @Override
     public List<UserDTO> export(PredicateWrapper predicateWrapper) {
-        long count = userRepository.count();
+        long count = sysUserRepository.count();
         R<List<UserDTO>> exportResult = this.queryUserInfoListByPage(predicateWrapper, PageRequest.of(0, (int) count));
         return exportResult.getData();
     }
@@ -191,13 +195,23 @@ public class UserServiceImpl extends BaseServiceImpl<UserEditDTO, UserDTO, User,
     }
 
     @Override
+    public UserEditDTO queryUserInfoByUsername(String username) {
+        Predicate predicate = qUserInfo.userName.eq(username);
+        List<UserEditDTO> queryList = queryUserInfoEditDTOListByPredicate(predicate);
+        if (queryList.size() == 1) {
+            return queryList.get(0);
+        }
+        return null;
+    }
+
+    @Override
     public BaseRepository<User, String> getRepository() {
-        return userRepository;
+        return sysUserRepository;
     }
 
     @Override
     public BaseMapper<User, UserDTO, UserEditDTO> getMapper() {
-        return userMapper;
+        return sysUserMapper;
     }
 
 }

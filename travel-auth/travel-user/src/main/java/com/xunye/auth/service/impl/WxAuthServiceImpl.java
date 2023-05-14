@@ -6,7 +6,7 @@ import javax.annotation.Resource;
 
 import com.xunye.auth.dto.UserEditDTO;
 import com.xunye.auth.entity.User;
-import com.xunye.auth.service.IUserService;
+import com.xunye.auth.service.ISysUserService;
 import com.xunye.auth.service.WxAuthService;
 
 import com.xunye.core.tools.CheckTools;
@@ -28,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class WxAuthServiceImpl implements WxAuthService {
 
     @Resource
-    private IUserService userService;
+    private ISysUserService userService;
     @Override
     @Transactional(rollbackFor = Exception.class)
     public UserEditDTO wxLogin(String openId, String sessionKey, String unionId) {

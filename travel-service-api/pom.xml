@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
     <modules>
-        <module>travel-auth-api</module>
+<!--        <module>travel-auth-api</module>-->
         <module>travel-route-api</module>
         <module>travel-group-api</module>
         <module>travel-notice-api</module>

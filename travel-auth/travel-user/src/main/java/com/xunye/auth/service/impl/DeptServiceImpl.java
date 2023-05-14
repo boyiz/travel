@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 
 import com.xunye.auth.repo.DeptRepository;
-import com.xunye.auth.repo.UserRepository;
+import com.xunye.auth.repo.SysUserRepository;
 import com.google.common.base.Joiner;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Predicate;
@@ -59,7 +59,7 @@ public class DeptServiceImpl extends BaseServiceImpl<DeptEditDTO, DeptDTO, Dept,
     @Resource
     private DeptMapper deptMapper;
     @Autowired
-    private UserRepository userRepository;
+    private SysUserRepository sysUserRepository;
 
     /**
      * 处理负责人录入/更新
@@ -133,7 +133,7 @@ public class DeptServiceImpl extends BaseServiceImpl<DeptEditDTO, DeptDTO, Dept,
     public R<Boolean> deleteDept(String id) {
         /* 检查该部门下是否仍关联用户 */
         QUser qUser = QUser.user;
-        long count = userRepository.count(qUser.deptId.eq(id));
+        long count = sysUserRepository.count(qUser.deptId.eq(id));
         if (count > 0) {
             return R.failure("删除失败，该部门下仍关联用户，请解绑后再试");
         }
@@ -388,7 +388,7 @@ public class DeptServiceImpl extends BaseServiceImpl<DeptEditDTO, DeptDTO, Dept,
         if (StringUtils.isNotEmpty(deptEditDTO.getLeaderUserIds())
                 && deptEditDTO.getLeaderUserIds().split(",").length > 0) {
             for (String leaderUserId : deptEditDTO.getLeaderUserIds().split(",")) {
-                User leader = userRepository.findById(leaderUserId).orElse(null);
+                User leader = sysUserRepository.findById(leaderUserId).orElse(null);
                 if (CheckTools.isNotNullOrEmpty(leader)) {
                     leaderList.add(leader);
                 } else {

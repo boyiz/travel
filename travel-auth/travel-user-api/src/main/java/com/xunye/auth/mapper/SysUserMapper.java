@@ -13,7 +13,7 @@ import org.mapstruct.*;
  * @Date: 2023-04-11
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = MapperHelper.class)
-public interface UserMapper extends BaseMapper<User, com.xunye.auth.dto.UserDTO, com.xunye.auth.dto.UserEditDTO> {
+public interface SysUserMapper extends BaseMapper<User, com.xunye.auth.dto.UserDTO, com.xunye.auth.dto.UserEditDTO> {
 
     /* 合并非空属性 => Target */
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

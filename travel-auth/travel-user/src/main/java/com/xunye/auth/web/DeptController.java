@@ -26,7 +26,7 @@ import com.xunye.auth.dto.DeptEditDTO;
 import com.xunye.auth.entity.Dept;
 import com.xunye.auth.entity.User;
 import com.xunye.auth.service.IDeptService;
-import com.xunye.auth.service.IUserService;
+import com.xunye.auth.service.ISysUserService;
 import com.xunye.auth.vo.DeptUserMixTreeNodeVo;
 import com.xunye.core.base.BaseController;
 import com.xunye.core.base.BaseEntity;
@@ -53,7 +53,7 @@ public class DeptController extends BaseController {
     @Resource
     private IDeptService deptService;
     @Autowired
-    private IUserService userService;
+    private ISysUserService userService;
     @Autowired
     private IDeptBiz deptBiz;
 

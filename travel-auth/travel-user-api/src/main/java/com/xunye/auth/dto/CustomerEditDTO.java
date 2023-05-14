@@ -1,10 +1,11 @@
 package com.xunye.auth.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
 import java.util.Date;
 
-import com.alibaba.excel.annotation.ExcelProperty;
+import cn.hutool.core.lang.Assert;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.xunye.core.tools.CheckTools;
+import lombok.Data;
 
 /**
  * 用户实体新增/编辑DTO
@@ -13,10 +14,12 @@ import com.alibaba.excel.annotation.ExcelProperty;
  * @Date: 2023-04-11
  */
 @Data
-public class UserEditDTO {
+public class CustomerEditDTO {
 
     /* id */
     private String id;
+    /* username */
+    private String userName;
     /* 用户微信openid */
     @JsonIgnore
     private String userOpenid;
@@ -71,4 +74,8 @@ public class UserEditDTO {
     @JsonIgnore
     private Date updateTime;
 
+    public void check() {
+        Assert.isTrue(CheckTools.isNotNullOrEmpty(userName), "用户名为空");
+        Assert.isTrue(CheckTools.isNotNullOrEmpty(password), "密码为空");
+    }
 }

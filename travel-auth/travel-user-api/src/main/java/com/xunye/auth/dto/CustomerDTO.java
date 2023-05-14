@@ -1,13 +1,14 @@
 package com.xunye.auth.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
-import com.xunye.core.base.BaseDTO;
 import java.util.Date;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.xunye.core.base.BaseDTO;
+import lombok.Data;
 
 /**
  * 用户实体DTO
@@ -17,10 +18,13 @@ import com.alibaba.excel.annotation.write.style.ColumnWidth;
  */
 @Data
 @ColumnWidth(value = 25)
-public class UserDTO extends BaseDTO {
+public class CustomerDTO extends BaseDTO {
 
     @ExcelProperty(value = "id")
     private String id;
+
+    @ExcelProperty(value = "用户名")
+    private String userName;
 
     @ExcelProperty(value = "用户微信openid")
     @JsonIgnore
@@ -50,6 +54,7 @@ public class UserDTO extends BaseDTO {
     @ExcelProperty(value = "用户昵称")
     private String nickName;
 
+    @JsonIgnore
     @ExcelProperty(value = "用户密码")
     private String password;
 

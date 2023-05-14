@@ -4,7 +4,7 @@ import com.alibaba.fastjson2.JSON;
 
 import com.xunye.auth.dto.UserDTO;
 import com.xunye.auth.entity.User;
-import com.xunye.auth.service.IUserService;
+import com.xunye.auth.service.ISysUserService;
 import com.xunye.auth.unserialize.UserUnserializeJsonRootEntity;
 import com.xunye.core.exception.BusinessException;
 import com.xunye.core.tools.CheckTools;
@@ -26,9 +26,9 @@ public class SecurityTools {
     private String SESSION_PREFIX;
 
     private final RedisUtil redisUtil;
-    private final IUserService userService;
+    private final ISysUserService userService;
 
-    public SecurityTools(RedisUtil redisUtil, IUserService userService) {
+    public SecurityTools(RedisUtil redisUtil, ISysUserService userService) {
         this.redisUtil = redisUtil;
         this.userService = userService;
     }

@@ -16,7 +16,7 @@ import com.xunye.auth.dto.UserDTO;
  * @Author: boyiz
  * @Date: 2023-04-11
  */
-public interface IUserService extends BaseService<UserEditDTO, UserDTO, User ,String> {
+public interface ISysUserService extends BaseService<UserEditDTO, UserDTO, User ,String> {
 
     /**
      * 创建用户实体
@@ -89,5 +89,5 @@ public interface IUserService extends BaseService<UserEditDTO, UserDTO, User ,St
 
     List<User> queryUserListInDeptIds(List<String> deptIdList);
 
-
+    UserEditDTO queryUserInfoByUsername(String username);
 }

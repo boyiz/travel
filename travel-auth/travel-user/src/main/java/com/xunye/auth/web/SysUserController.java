@@ -1,12 +1,10 @@
 package com.xunye.auth.web;
 
-import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.EasyExcel;
 
-import com.querydsl.core.types.ExpressionUtils;
 import com.xunye.auth.dto.UserDTO;
 import com.xunye.auth.dto.UserEditDTO;
 import com.xunye.auth.entity.QUser;
@@ -16,10 +14,12 @@ import com.xunye.core.base.BaseController;
 import com.xunye.core.model.PredicateWrapper;
 import com.xunye.core.result.R;
 import com.xunye.core.tools.CheckTools;
-import com.xunye.auth.service.IUserService;
+import com.xunye.auth.service.ISysUserService;
 import com.querydsl.core.types.Predicate;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -31,12 +31,10 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/user")
-@SaCheckLogin
-@SaCheckRole("admin")
-public class UserController extends BaseController {
+public class SysUserController extends BaseController {
 
     @Resource
-    private IUserService userInfoService;
+    private ISysUserService userInfoService;
     @Resource
     private SecurityTools securityTools;
 
@@ -47,19 +45,10 @@ public class UserController extends BaseController {
      * @param pageable  分页参数
      */
     @GetMapping("/all")
-    @SaCheckRole("super-admin")
     public R<List<UserDTO>> allList(@QuerydslPredicate(root = User.class) Predicate predicate,
                                          Pageable pageable) {
         return userInfoService.queryUserInfoListByPage(PredicateWrapper.of(predicate), pageable);
     }
-
-    //@GetMapping
-    //public R<List<UserDTO>> list(@QuerydslPredicate(root = User.class) Predicate predicate,
-    //    Pageable pageable) {
-    //    QUser qUser = QUser.user;
-    //    predicate = ExpressionUtils.and(predicate, qUser.id.eq(StpUtil.getLoginIdAsString()));
-    //    return userInfoService.queryUserInfoListByPage(PredicateWrapper.of(predicate), pageable);
-    //}
 
     /**
      * 用户实体创建接口
@@ -67,13 +56,39 @@ public class UserController extends BaseController {
      * @param addDTO 创建信息
      */
     @PostMapping
-    @SaCheckRole("super-admin")
+    //@SaCheckRole("super-admin")
     public R<String> create(@RequestBody UserEditDTO addDTO) {
-        User currentRealUser = securityTools.getLoginUser(StpUtil.getLoginIdAsString());
-
+        addDTO.check();
+        //User currentRealUser = securityTools.getLoginUser(StpUtil.getLoginIdAsString());
+        User currentRealUser = new User();
+        currentRealUser.setCreateByName("admin");
+        UserEditDTO userEditDTO = userInfoService.queryUserInfoByUsername(addDTO.getUserName());
+        if (CheckTools.isNotNullOrEmpty(userEditDTO)) {
+            return R.failure("当前用户名已存在");
+        }
         // 创建并返回dbId
         String dbId = userInfoService.createUserInfo(addDTO, currentRealUser);
         return R.success("创建成功",dbId);
+    }
+
+    @PostMapping("/home")
+    public R<UserDTO> login(@RequestBody UserEditDTO addDTO) {
+        addDTO.check();
+        UserEditDTO userEditDTO = userInfoService.queryUserInfoByUsername(addDTO.getUserName());
+        if (CheckTools.isNullOrEmpty(userEditDTO)) {
+            return R.failure("用户名或密码有误");
+        }
+        boolean matches = new BCryptPasswordEncoder().matches(addDTO.getPassword(), userEditDTO.getPassword());
+        if (matches) {
+            StpUtil.login(userEditDTO.getId());
+            String tokenValue = StpUtil.getTokenValue();
+            UserDTO user = new UserDTO();
+            BeanUtils.copyProperties(userEditDTO, user);
+            user.setToken(tokenValue);
+            return R.success("登录成功", user);
+        } else {
+            return R.failure("用户名或密码有误");
+        }
     }
 
     /**
